@@ -12,12 +12,14 @@
 import { Goal, QuizAnswers, HabitTrigger } from '../types';
 import {
   MockUserProfile,
-  CompletionHistoryEntry
+  CompletionHistoryEntry,
+  PRESEEDED_GOAL,
+  PRESEEDED_USER
 } from './mockData';
 import { localStore, LocalDataStore } from './localStore';
 
 export type { CompletionHistoryEntry, MockUserProfile };
-export { localStore, LocalDataStore };
+export { localStore, LocalDataStore, PRESEEDED_GOAL, PRESEEDED_USER };
 
 /**
  * Compatibility key-value interface backed by LocalDataStore driver
@@ -32,8 +34,8 @@ export const storage = {
 /**
  * User Profile CRUD via LocalDataStore
  */
-export const getUserProfile = (): MockUserProfile => {
-  return localStore.getUserProfile() || localStore.getUserProfile()!;
+export const getUserProfile = (): MockUserProfile | null => {
+  return localStore.getUserProfile();
 };
 
 export const setUserProfile = (profile: MockUserProfile | null): void => {

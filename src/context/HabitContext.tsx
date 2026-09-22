@@ -17,7 +17,8 @@ import {
   getUserEnergy,
   setUserEnergy,
   storage,
-  MockUserProfile 
+  MockUserProfile,
+  PRESEEDED_GOAL
 } from '../services/storage';
 
 export type UserProfile = MockUserProfile;
@@ -102,6 +103,16 @@ export function HabitProvider({ children }: { children: React.ReactNode }) {
     setUserProfile(profile);
     setIsGuest(false);
     storage.delete('hbw_is_guest');
+
+    // If demo account Nathan Nagy logs in, populate the demo habit & stats if not already set
+    if (email.toLowerCase().includes('nathan') && !committedGoal) {
+      setCommittedGoalState(PRESEEDED_GOAL);
+      saveCommittedGoal(PRESEEDED_GOAL);
+      setStreakState(14);
+      setUserStreak(14);
+      setIndividualEnergyState(185);
+      setUserEnergy(185);
+    }
   };
 
   const continueAsGuest = () => {

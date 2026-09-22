@@ -39,6 +39,13 @@ function AppContent() {
     return committedGoal ? 'dashboard' : 'quiz';
   });
 
+  // Automatically transition to dashboard if a committed goal becomes available
+  React.useEffect(() => {
+    if (committedGoal && currentPage === 'quiz' && (user || isGuest)) {
+      setCurrentPage('dashboard');
+    }
+  }, [committedGoal, user, isGuest]);
+
   // Recommendation outputs
   const [topGoal, setTopGoal] = useState<Goal | null>(null);
   const [alternatives, setAlternatives] = useState<Goal[]>([]);

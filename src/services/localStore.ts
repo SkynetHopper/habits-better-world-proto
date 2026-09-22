@@ -241,53 +241,35 @@ export class LocalDataStore {
 
   /**
    * Seeds realistic, science-based initial data for all application models.
+   * Note: Fresh installs and incognito sessions do NOT auto-login or auto-commit
+   * so new users experience the Welcome gateway and Onboarding flow.
    */
   public seedInitialData(): void {
-    // 1. User Profile
-    if (!driver.getItem(KEYS.USER_PROFILE)) {
-      driver.setItem(KEYS.USER_PROFILE, safeStringify(PRESEEDED_USER));
-    }
-
-    // 2. Committed Goal
-    if (!driver.getItem(KEYS.COMMITTED_GOAL)) {
-      driver.setItem(KEYS.COMMITTED_GOAL, safeStringify(PRESEEDED_GOAL));
-    }
-
-    // 3. Chosen Habits Wardrobe
-    if (!driver.getItem(KEYS.CHOSEN_HABITS)) {
-      driver.setItem(KEYS.CHOSEN_HABITS, safeStringify([PRESEEDED_GOAL]));
-    }
-
-    // 4. Clinical Quiz Answers
+    // 1. Clinical Quiz Answers template
     if (!driver.getItem(KEYS.QUIZ_ANSWERS)) {
       driver.setItem(KEYS.QUIZ_ANSWERS, safeStringify(PRESEEDED_QUIZ_ANSWERS));
     }
 
-    // 5. 14-Day Completion History
-    if (!driver.getItem(KEYS.COMPLETIONS)) {
-      driver.setItem(KEYS.COMPLETIONS, safeStringify(generatePreseededHistory()));
-    }
-
-    // 6. Habit Triggers
+    // 2. Habit Triggers catalog
     if (!driver.getItem(KEYS.TRIGGERS)) {
       driver.setItem(KEYS.TRIGGERS, safeStringify(PRESEEDED_TRIGGERS));
     }
 
-    // 7. Gamification Stats
+    // 3. Initial Gamification Stats
     if (!driver.getItem(KEYS.STREAK)) {
-      driver.setItem(KEYS.STREAK, '14');
+      driver.setItem(KEYS.STREAK, '0');
     }
     if (!driver.getItem(KEYS.ENERGY)) {
-      driver.setItem(KEYS.ENERGY, '185');
+      driver.setItem(KEYS.ENERGY, '0');
     }
     if (!driver.getItem(KEYS.AVOIDED_REQUESTS)) {
-      driver.setItem(KEYS.AVOIDED_REQUESTS, '12');
+      driver.setItem(KEYS.AVOIDED_REQUESTS, '0');
     }
     if (!driver.getItem(KEYS.DARK_TIME)) {
-      driver.setItem(KEYS.DARK_TIME, '3680');
+      driver.setItem(KEYS.DARK_TIME, '0');
     }
 
-    // 8. Event RSVPs
+    // 4. Event RSVPs
     if (!driver.getItem(KEYS.EVENT_RSVPS)) {
       driver.setItem(KEYS.EVENT_RSVPS, safeStringify({ 'evt-1': true }));
     }
@@ -322,9 +304,10 @@ export class LocalDataStore {
 
   public getUserProfile(): UserProfileRecord | null {
     const raw = driver.getItem(KEYS.USER_PROFILE);
+    if (!raw) return null;
     return safeParse<UserProfileRecord | null>(
       raw,
-      PRESEEDED_USER,
+      null,
       (val) => typeof val === 'object' && val !== null && 'displayName' in val
     );
   }
@@ -349,11 +332,12 @@ export class LocalDataStore {
   // GOALS & HABITS CRUD
   // -------------------------------------------------------------------------
 
-  public getCommittedGoal(): GoalRecord {
+  public getCommittedGoal(): GoalRecord | null {
     const raw = driver.getItem(KEYS.COMMITTED_GOAL);
-    return safeParse<GoalRecord>(
+    if (!raw) return null;
+    return safeParse<GoalRecord | null>(
       raw,
-      PRESEEDED_GOAL,
+      null,
       (val) => typeof val === 'object' && val !== null && 'id' in val && 'title' in val
     );
   }
@@ -377,8 +361,11 @@ export class LocalDataStore {
 
   public getChosenHabits(): GoalRecord[] {
     const raw = driver.getItem(KEYS.CHOSEN_HABITS);
-    const fallback = [this.getCommittedGoal()];
-    return safeParse<GoalRecord[]>(raw, fallback, (val) => Array.isArray(val) && val.length > 0);
+    if (!raw) {
+      const active = this.getCommittedGoal();
+      return active ? [active] : [];
+    }
+    return safeParse<GoalRecord[]>(raw, [], (val) => Array.isArray(val));
   }
 
   public setChosenHabits(habits: GoalRecord[]): void {

@@ -38,7 +38,8 @@ export default function CommunityChat({ category, goalTitle, theme = 'light' }: 
     'Responsible AI': 'hbw-responsible-ai'
   }[category] || 'hbw-global';
 
-  const slackWorkspaceUrl = `https://slack.com/app_redirect?channel=${slackChannelName}`;
+  // Specific community Slack channel URL requested by user
+  const slackWorkspaceUrl = 'https://uxrforgoodhab-9wx7364.slack.com/archives/C07E6FMNZU4';
 
   // Shared Google Calendar ID for Habits for a Better World community
   const sharedCalendarId = 'c_habitsforabetterworld@group.calendar.google.com';

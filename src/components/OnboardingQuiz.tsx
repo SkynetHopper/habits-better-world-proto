@@ -12,9 +12,10 @@ interface OnboardingQuizProps {
   skipDemographics?: boolean;
   theme?: 'dark' | 'light';
   onToggleTheme?: (theme: 'dark' | 'light') => void;
+  onBackToWelcome?: () => void;
 }
 
-export default function OnboardingQuiz({ answers, setAnswers, onSubmit, isLoading, skipDemographics = false, theme = 'light', onToggleTheme }: OnboardingQuizProps) {
+export default function OnboardingQuiz({ answers, setAnswers, onSubmit, isLoading, skipDemographics = false, theme = 'light', onToggleTheme, onBackToWelcome }: OnboardingQuizProps) {
   const [step, setStep] = useState<number>(skipDemographics ? 2 : 1);
   const isDark = theme === 'dark';
 
@@ -34,6 +35,30 @@ export default function OnboardingQuiz({ answers, setAnswers, onSubmit, isLoadin
   const handleBack = () => {
     if (step > 1 && !skipDemographics) {
       setStep(1);
+    } else if (onBackToWelcome) {
+      onBackToWelcome();
+    }
+  };
+
+  const handleSkip = () => {
+    if (step === 1) {
+      // Provide standard baseline demographics and advance to step 2
+      setAnswers(prev => ({
+        ...prev,
+        age: prev.age || '25–34',
+        gender: prev.gender || 'Prefer not to say'
+      }));
+      setStep(2);
+    } else {
+      // Provide standard baseline category if not selected, and submit
+      if (!answers.categories || answers.categories.length === 0) {
+        setAnswers(prev => ({
+          ...prev,
+          categories: ['Environment'],
+          isCustomPath: false
+        }));
+      }
+      onSubmit();
     }
   };
 
@@ -86,39 +111,53 @@ export default function OnboardingQuiz({ answers, setAnswers, onSubmit, isLoadin
 
   return (
     <div className="w-full max-w-md mx-auto px-4 py-5 flex flex-col justify-between min-h-[100dvh]">
-      {/* Top Header with back button, centered HBW Logo, and Theme toggle */}
+      {/* Top Header with Back button, centered HBW Logo, Skip button & Theme toggle */}
       <div className="flex items-center justify-between mb-4 pt-1">
-        {step > 1 && !skipDemographics ? (
-          <button
-            onClick={handleBack}
-            className={`p-1.5 -ml-1 rounded-full transition-colors cursor-pointer ${
-              isDark ? 'text-[#8E8E93] hover:text-white hover:bg-[#1F1F24]' : 'text-[#6C6C70] hover:text-[#1C1C1E] hover:bg-[#E5E5EA]'
-            }`}
-            aria-label="Go back"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-        ) : (
-          <div className="w-8 h-8" />
-        )}
+        <button
+          type="button"
+          id="quiz-top-back-btn"
+          onClick={handleBack}
+          className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full transition-colors cursor-pointer ${
+            isDark ? 'text-[#8E8E93] hover:text-white hover:bg-[#1F1F24]' : 'text-[#6C6C70] hover:text-[#1C1C1E] hover:bg-[#E5E5EA]'
+          }`}
+          aria-label="Go back"
+        >
+          <ChevronLeft className="w-4 h-4" />
+          <span className="text-xs font-semibold">Back</span>
+        </button>
 
         {/* Centered Brand Logo */}
         <div className="flex items-center justify-center">
           <HBWLogo size="md" variant="full" theme={isDark ? 'dark' : 'light'} />
         </div>
 
-        {/* Theme Toggle Button */}
-        <button
-          type="button"
-          onClick={() => onToggleTheme?.(isDark ? 'light' : 'dark')}
-          className={`p-1.5 -mr-1 rounded-full transition-all cursor-pointer ${
-            isDark ? 'text-[#98989D] hover:text-white hover:bg-[#1F1F24]' : 'text-[#6C6C70] hover:text-[#1C1C1E] hover:bg-[#E5E5EA]'
-          }`}
-          title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-          aria-label={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-        >
-          {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-[#0080FF]" />}
-        </button>
+        {/* Right Action Group: Skip Button & Theme Toggle */}
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            id="quiz-top-skip-btn"
+            onClick={handleSkip}
+            className={`px-3 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer border ${
+              isDark
+                ? 'bg-[#121214] border-[#1F1F24] text-[#8E8E93] hover:text-white hover:border-[#2C2C30]'
+                : 'bg-white border-[#E5E5EA] text-[#6C6C70] hover:text-[#1C1C1E] hover:border-[#D1D1D6] shadow-2xs'
+            }`}
+          >
+            Skip
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onToggleTheme?.(isDark ? 'light' : 'dark')}
+            className={`p-1.5 rounded-full transition-all cursor-pointer ${
+              isDark ? 'text-[#98989D] hover:text-white hover:bg-[#1F1F24]' : 'text-[#6C6C70] hover:text-[#1C1C1E] hover:bg-[#E5E5EA]'
+            }`}
+            title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            aria-label={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          >
+            {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-[#0080FF]" />}
+          </button>
+        </div>
       </div>
 
       <AnimatePresence mode="wait">
@@ -220,7 +259,7 @@ export default function OnboardingQuiz({ answers, setAnswers, onSubmit, isLoadin
               <h2 className={`text-2xl font-serif font-normal tracking-tight sm:text-3xl ${
                 isDark ? 'text-white' : 'text-[#1C1C1E]'
               }`}>
-                How do you like to make an <i className="italic font-serif">impact?</i>
+                How would you like to make an <i className="italic font-serif">impact?</i>
               </h2>
               <p className={`text-sm font-sans leading-relaxed ${
                 isDark ? 'text-[#98989D]' : 'text-[#6C6C70]'
@@ -400,8 +439,8 @@ export default function OnboardingQuiz({ answers, setAnswers, onSubmit, isLoadin
         )}
       </AnimatePresence>
 
-      {/* Navigation footer matching screenshot */}
-      <div className="mt-8 flex flex-col items-center gap-4">
+      {/* Navigation footer with step dots, Back/Continue row, and Skip button */}
+      <div className="mt-8 flex flex-col items-center gap-3.5">
         {/* Step dots indicator matching screenshot • • • • */}
         <div className="flex items-center justify-center gap-1.5">
           <div className={`h-1.5 rounded-full transition-all duration-300 ${
@@ -414,32 +453,61 @@ export default function OnboardingQuiz({ answers, setAnswers, onSubmit, isLoadin
           <div className={`w-1.5 h-1.5 rounded-full ${isDark ? 'bg-[#3A3A3C]' : 'bg-[#D1D1D6]'}`} />
         </div>
 
+        {/* Primary Action Row: Back & Continue */}
+        <div className="w-full flex items-center gap-3">
+          <button
+            type="button"
+            id="quiz-bottom-back-btn"
+            onClick={handleBack}
+            className={`h-[52px] px-5 font-sans font-semibold text-sm rounded-full transition-all flex items-center justify-center gap-1.5 cursor-pointer border shrink-0 ${
+              isDark
+                ? 'bg-[#121214] border-[#1F1F24] text-[#98989D] hover:text-white hover:bg-[#1A1A1E]'
+                : 'bg-white border-[#E5E5EA] text-[#6C6C70] hover:text-[#1C1C1E] hover:bg-[#F2F2F7] shadow-2xs'
+            }`}
+          >
+            <ChevronLeft className="w-4 h-4" />
+            <span>Back</span>
+          </button>
+
+          <button
+            id="next-btn"
+            onClick={handleNext}
+            disabled={
+              isLoading ||
+              (step === 1 && !isStep1Valid) ||
+              (step === 2 && !isStep2Valid)
+            }
+            className={`flex-1 h-[52px] font-sans font-semibold text-base text-white rounded-full transition-all flex items-center justify-center cursor-pointer shadow-md ${
+              isLoading ||
+              (step === 1 && !isStep1Valid) ||
+              (step === 2 && !isStep2Valid)
+                ? isDark
+                  ? 'bg-[#121214] border border-[#1F1F24] cursor-not-allowed text-[#636366]'
+                  : 'bg-[#E5E5EA] cursor-not-allowed text-[#8E8E93]'
+                : 'bg-[#0080FF] hover:bg-[#0066CC] active:scale-[0.99]'
+            }`}
+          >
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                <span>Building Plan...</span>
+              </div>
+            ) : (
+              <span>Continue</span>
+            )}
+          </button>
+        </div>
+
+        {/* Dedicated Skip Button in Footer */}
         <button
-          id="next-btn"
-          onClick={handleNext}
-          disabled={
-            isLoading ||
-            (step === 1 && !isStep1Valid) ||
-            (step === 2 && !isStep2Valid)
-          }
-          className={`w-full h-[52px] font-sans font-semibold text-base text-white rounded-full transition-all flex items-center justify-center cursor-pointer shadow-md ${
-            isLoading ||
-            (step === 1 && !isStep1Valid) ||
-            (step === 2 && !isStep2Valid)
-              ? isDark
-                ? 'bg-[#121214] border border-[#1F1F24] cursor-not-allowed text-[#636366]'
-                : 'bg-[#E5E5EA] cursor-not-allowed text-[#8E8E93]'
-              : 'bg-[#0080FF] hover:bg-[#0066CC] active:scale-[0.99]'
+          type="button"
+          id="quiz-bottom-skip-btn"
+          onClick={handleSkip}
+          className={`text-xs font-sans font-semibold py-1 px-3 rounded-full transition-all cursor-pointer hover:underline ${
+            isDark ? 'text-[#8E8E93] hover:text-white' : 'text-[#6C6C70] hover:text-[#1C1C1E]'
           }`}
         >
-          {isLoading ? (
-            <div className="flex items-center gap-2">
-              <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-              <span>Building Plan...</span>
-            </div>
-          ) : (
-            <span>Continue</span>
-          )}
+          {step === 1 ? 'Skip demographics' : 'Skip & view recommended habits'}
         </button>
       </div>
     </div>

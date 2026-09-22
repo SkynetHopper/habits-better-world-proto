@@ -84,6 +84,14 @@ function AppContent() {
     setCurrentPage('quiz');
   };
 
+  const handleBackFromQuiz = () => {
+    if (committedGoal) {
+      setCurrentPage('dashboard');
+    } else {
+      goToAuth();
+    }
+  };
+
   const handleSignOut = async () => {
     setCurrentPage('quiz');
     setTopGoal(null);
@@ -156,6 +164,7 @@ function AppContent() {
                     skipDemographics={!!user}
                     theme={theme}
                     onToggleTheme={toggleTheme}
+                    onBackToWelcome={handleBackFromQuiz}
                   />
                 )}
 

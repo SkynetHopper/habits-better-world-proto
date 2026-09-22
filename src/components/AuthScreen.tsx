@@ -203,6 +203,7 @@ export default function AuthScreen({ onLoginSuccess, onContinueAsGuest, theme = 
               {/* Primary Login Pill Button */}
               <button
                 type="button"
+                id="welcome-login-btn"
                 onClick={() => {
                   setIsSignUp(false);
                   setView('form');

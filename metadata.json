@@ -1,0 +1,8 @@
+{
+  "name": "HBW-MVP-Sep6",
+  "description": "Habits for a Better World - Science-based habit transformation and community hub",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- Outer Pearl disc (#F7F4F4) as per brand guidelines and uploaded asset -->
+  <circle cx="256" cy="256" r="248" fill="#F7F4F4" />
+  <!-- Left semicircle: Azure 1 (#24A1FF) -->
+  <path d="M 256 44 A 212 212 0 0 0 256 468 Z" fill="#24A1FF" />
+  <!-- Right semicircle: White (#FFFFFF) -->
+  <path d="M 256 44 A 212 212 0 0 1 256 468 Z" fill="#FFFFFF" />
+</svg>

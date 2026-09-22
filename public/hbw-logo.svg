@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 100" fill="none">
+  <!-- Semicircle symbol: Azure 1 (#24A1FF) -->
+  <path d="M 50 2 A 48 48 0 0 0 50 98 Z" fill="#24A1FF" />
+  <!-- Wordmark in Figtree Bold uppercase -->
+  <text x="58" y="24" font-family="'Figtree', 'Inter', system-ui, sans-serif" font-weight="800" font-size="24" fill="#0A0A0A" letter-spacing="-0.5">HABITS</text>
+  <text x="58" y="48" font-family="'Figtree', 'Inter', system-ui, sans-serif" font-weight="800" font-size="24" fill="#0A0A0A" letter-spacing="-0.5">FOR A</text>
+  <text x="58" y="72" font-family="'Figtree', 'Inter', system-ui, sans-serif" font-weight="800" font-size="24" fill="#24A1FF" letter-spacing="-0.5">BETTER</text>
+  <text x="58" y="96" font-family="'Figtree', 'Inter', system-ui, sans-serif" font-weight="800" font-size="24" fill="#0A0A0A" letter-spacing="-0.5">WORLD</text>
+</svg>

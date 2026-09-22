@@ -10,6 +10,8 @@ import GoalRecommendations from './components/GoalRecommendations';
 import DashboardSimulation from './components/DashboardSimulation';
 import { getRecommendedGoals } from './data';
 import AuthScreen from './components/AuthScreen';
+import Splash from './components/splash/Splash';
+import { AnimatePresence, motion } from 'motion/react';
 import { BrowserRouter } from 'react-router-dom';
 import { HabitProvider, useHabit } from './context/HabitContext';
 
@@ -30,6 +32,8 @@ function AppContent() {
     theme,
     toggleTheme
   } = useHabit();
+
+  const [showSplash, setShowSplash] = useState<boolean>(true);
 
   const [currentPage, setCurrentPage] = useState<'quiz' | 'recommendations' | 'dashboard'>(() => {
     return committedGoal ? 'dashboard' : 'quiz';
@@ -103,67 +107,84 @@ function AppContent() {
   }
 
   return (
-    <div className={`min-h-screen w-full flex flex-col items-center justify-start transition-colors duration-300 ${
-      isDarkCanvas ? 'bg-[#0A0A0C] text-[#F5F5F7]' : 'bg-[#F5F5F7] text-[#1C1C1E]'
-    }`}>
-      {/* Real Mobile App Viewport Container */}
-      <div className={`w-full max-w-md min-h-screen flex flex-col flex-1 relative transition-colors duration-300 ${
+    <>
+      <AnimatePresence mode="wait">
+        {showSplash && (
+          <motion.div
+            key="app-launch-splash"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.35, ease: 'easeInOut' }}
+            className="fixed inset-0 z-50 pointer-events-auto"
+          >
+            <Splash onComplete={() => setShowSplash(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className={`min-h-screen w-full flex flex-col items-center justify-start transition-colors duration-300 ${
         isDarkCanvas ? 'bg-[#0A0A0C] text-[#F5F5F7]' : 'bg-[#F5F5F7] text-[#1C1C1E]'
       }`}>
-        <main className="flex-1 w-full h-full flex flex-col justify-start">
-          {/* Show login/signup screen if no user and not choosing Guest mode */}
-          {!user && !isGuest ? (
-            <AuthScreen 
-              onLoginSuccess={loginUser}
-              onContinueAsGuest={continueAsGuest}
-              theme={theme}
-              onToggleTheme={toggleTheme}
-            />
-          ) : (
-            <>
-              {effectivePage === 'quiz' && (
-                <OnboardingQuiz
-                  answers={answers}
-                  setAnswers={updateAnswers}
-                  onSubmit={handleSubmitQuiz}
-                  isLoading={isLoading}
-                  skipDemographics={!!user}
-                  theme={theme}
-                  onToggleTheme={toggleTheme}
-                />
-              )}
+        {/* Real Mobile App Viewport Container */}
+        <div className={`w-full max-w-md min-h-screen flex flex-col flex-1 relative transition-colors duration-300 ${
+          isDarkCanvas ? 'bg-[#0A0A0C] text-[#F5F5F7]' : 'bg-[#F5F5F7] text-[#1C1C1E]'
+        }`}>
+          <main className="flex-1 w-full h-full flex flex-col justify-start">
+            {/* Show login/signup screen if no user and not choosing Guest mode */}
+            {!user && !isGuest ? (
+              <AuthScreen 
+                onLoginSuccess={loginUser}
+                onContinueAsGuest={continueAsGuest}
+                theme={theme}
+                onToggleTheme={toggleTheme}
+              />
+            ) : (
+              <>
+                {effectivePage === 'quiz' && (
+                  <OnboardingQuiz
+                    answers={answers}
+                    setAnswers={updateAnswers}
+                    onSubmit={handleSubmitQuiz}
+                    isLoading={isLoading}
+                    skipDemographics={!!user}
+                    theme={theme}
+                    onToggleTheme={toggleTheme}
+                  />
+                )}
 
-              {effectivePage === 'recommendations' && topGoal && (
-                <GoalRecommendations
-                  answers={answers}
-                  topGoal={topGoal}
-                  alternatives={alternatives}
-                  onCommit={handleCommitGoal}
-                  onReset={handleResetQuiz}
-                  hasAI={hasAI}
-                  theme={theme}
-                  onToggleTheme={toggleTheme}
-                />
-              )}
+                {effectivePage === 'recommendations' && topGoal && (
+                  <GoalRecommendations
+                    answers={answers}
+                    topGoal={topGoal}
+                    alternatives={alternatives}
+                    onCommit={handleCommitGoal}
+                    onReset={handleResetQuiz}
+                    hasAI={hasAI}
+                    theme={theme}
+                    onToggleTheme={toggleTheme}
+                  />
+                )}
 
-              {effectivePage === 'dashboard' && committedGoal && (
-                <DashboardSimulation
-                  goal={committedGoal}
-                  onReset={handleResetQuiz}
-                  answers={answers}
-                  onUpdateAnswers={updateAnswers}
-                  user={user}
-                  onSignOut={handleSignOut}
-                  onOpenAuth={goToAuth}
-                  theme={theme}
-                  onToggleTheme={toggleTheme}
-                />
-              )}
-            </>
-          )}
-        </main>
+                {effectivePage === 'dashboard' && committedGoal && (
+                  <DashboardSimulation
+                    goal={committedGoal}
+                    onReset={handleResetQuiz}
+                    answers={answers}
+                    onUpdateAnswers={updateAnswers}
+                    user={user}
+                    onSignOut={handleSignOut}
+                    onOpenAuth={goToAuth}
+                    theme={theme}
+                    onToggleTheme={toggleTheme}
+                    onReplaySplash={() => setShowSplash(true)}
+                  />
+                )}
+              </>
+            )}
+          </main>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

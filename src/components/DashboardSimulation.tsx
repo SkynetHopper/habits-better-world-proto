@@ -42,6 +42,7 @@ interface DashboardSimulationProps {
   onOpenAuth?: () => void;
   theme?: 'dark' | 'light';
   onToggleTheme?: (theme: 'dark' | 'light') => void;
+  onReplaySplash?: () => void;
 }
 
 type TabType = 'home' | 'community' | 'progress' | 'profile';
@@ -55,7 +56,8 @@ export default function DashboardSimulation({
   onSignOut,
   onOpenAuth,
   theme = 'light',
-  onToggleTheme
+  onToggleTheme,
+  onReplaySplash,
 }: DashboardSimulationProps) {
   // Store the active focusing goal. It defaults to the onboarding selected habit.
   const [activeGoal, setActiveGoal] = useState<Goal>(goal);
@@ -428,6 +430,10 @@ export default function DashboardSimulation({
         onSignOut={onSignOut}
         onOpenAuth={onOpenAuth}
         onDownloadPDF={handleDownloadPDF}
+        onReplaySplash={onReplaySplash ? () => {
+          setShowOverflowMenu(false);
+          onReplaySplash();
+        } : undefined}
       />
 
       {/* Confetti Micro-Simulator Alert */}

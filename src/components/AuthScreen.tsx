@@ -12,15 +12,7 @@ interface AuthScreenProps {
 }
 
 export default function AuthScreen({ onLoginSuccess, onContinueAsGuest, theme = 'light', onToggleTheme }: AuthScreenProps) {
-  const [view, setView] = useState<'splash' | 'welcome' | 'form'>(() => {
-    if (typeof window !== 'undefined') {
-      const path = window.location.pathname;
-      if (path === '/welcome' || path.startsWith('/auth')) {
-        return 'welcome';
-      }
-    }
-    return 'splash';
-  });
+  const [view, setView] = useState<'splash' | 'welcome' | 'form'>('welcome');
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

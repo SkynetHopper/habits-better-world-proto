@@ -36,6 +36,7 @@ export interface OverflowSettingsMenuProps {
   onSignOut?: () => void;
   onOpenAuth?: () => void;
   onDownloadPDF?: () => void;
+  onReplaySplash?: () => void;
 }
 
 /**
@@ -57,6 +58,7 @@ export default function OverflowSettingsMenu({
   onSignOut,
   onOpenAuth,
   onDownloadPDF,
+  onReplaySplash,
 }: OverflowSettingsMenuProps) {
   if (!isOpen) return null;
 
@@ -265,6 +267,29 @@ export default function OverflowSettingsMenu({
                   <RotateCcw className={`w-3.5 h-3.5 ${theme === 'dark' ? 'text-[#8E8E93]' : 'text-[#6C6C70]'}`} />
                 </div>
               </button>
+
+              {/* Replay Welcome Splash */}
+              {onReplaySplash && (
+                <button
+                  type="button"
+                  onClick={() => handleAction(onReplaySplash)}
+                  className={`w-full px-3 py-2 flex items-center justify-between text-left transition-colors cursor-pointer ${
+                    theme === 'dark' ? 'hover:bg-white/10 active:bg-white/15' : 'hover:bg-black/5 active:bg-black/10'
+                  }`}
+                >
+                  <div className="min-w-0 pr-2">
+                    <p className="text-xs font-medium leading-tight">Welcome Splash</p>
+                    <p className={`text-[10px] leading-tight truncate ${
+                      theme === 'dark' ? 'text-[#8E8E93]' : 'text-[#6C6C70]'
+                    }`}>
+                      Replay brand intro animation
+                    </p>
+                  </div>
+                  <div className="w-7 h-7 rounded-lg bg-[#0080FF]/10 flex items-center justify-center shrink-0">
+                    <Sparkles className="w-3.5 h-3.5 text-[#0080FF]" />
+                  </div>
+                </button>
+              )}
             </div>
 
             {/* Hairline Divider */}

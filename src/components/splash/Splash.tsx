@@ -25,8 +25,7 @@ export default function Splash({ onComplete }: SplashProps) {
   const handleFinish = () => {
     if (onComplete) {
       onComplete();
-    }
-    if (navigate) {
+    } else if (navigate) {
       navigate("/welcome");
     }
   };
